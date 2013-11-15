@@ -1,0 +1,21 @@
+# Target: fibacap
+
+####
+#
+# TODOs
+#
+# Flag: 
+#	D - Discard 
+#	F - Finish 
+#	I - Ingore
+#	A - Already done
+#
+# Test:
+#	F - firefox
+#	G - chrome
+#	E - IE
+#
+# Num	Flag	TODO
+1	F 	capture frame
+2	F	analyze ethernet
+3		fetch common data
