@@ -7,12 +7,14 @@
 #include <string.h>
 #include <errno.h>
 
-#include "analysis.h"
+#include "fbc_common.h"
+#include "fbc_packet.h"
+#include "fbc_ether.h"
 
 void print_byte(Byte byte) {
 	int c = 8;
 	while (c--) {
-		printf("%c", (byte >> c & 0x01) ? '1' : '0');
+		printf("%c", ((byte >> c) & 0x01) ? '1' : '0');
 	}
 	printf(" ");
 }
@@ -66,6 +68,7 @@ void print_raw(Byte const *buf, int length)
 	}
 	printf("\n\n");
 
+	/*
 	i = 0;
 	while (i < length) {
 		print_char(buf[i++]);
@@ -73,7 +76,13 @@ void print_raw(Byte const *buf, int length)
 			printf("\n");
 		}
 	}
+	*/
 	printf("\n\n");
+}
+
+fbc_Packet *init_packet(Byte *buf)
+{
+	return fbc_init_packet_by_protocol(buf, FBC_PROTOCOL_ETHER);
 }
 
 int main()
@@ -81,7 +90,7 @@ int main()
 	int s;
 	Byte buf[1600];
 	int nbytes;
-	struct Frame *frame = 0;
+	fbc_Packet  *packet = 0;
 
 
 	s = socket(PF_PACKET, SOCK_RAW, htons(ETH_P_ALL));
@@ -96,12 +105,15 @@ int main()
 
 		if (nbytes) {
 			printf("Get packet, %dbytes\n", nbytes);
+			/* print_raw(buf, nbytes); */
 
-			frame = analyzer(buf, nbytes);
+			packet = init_packet(buf);
 
-			frame_print(stdout, "", frame);
+			(packet->fbc_print_packet)(stdout, "", packet);
 
-			frame_free(frame);
+			(packet->fbc_destroy_packet)(packet);
+
+			printf("\n");
 		} else {
 			printf("Get no packet\n");
 		}

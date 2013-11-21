@@ -17,5 +17,9 @@
 #
 # Num	Flag	TODO
 1	F 	capture frame
-2	F	analyze ethernet
-3		fetch common data
+2	F	Basic frame
+3	F	Get ethernet frame
+4	F	Get IP packet
+5	F	Arp packet
+6		TCP packet
+7		UDP packet
