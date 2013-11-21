@@ -1,8 +1,10 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <netinet/if_ether.h>
+#include <net/ethernet.h>
 #include <netdb.h>
 #include <string.h>
 #include <errno.h>
@@ -10,6 +12,8 @@
 #include "fbc_common.h"
 #include "fbc_packet.h"
 #include "fbc_ether.h"
+#include "fbc_filter.h"
+#include "fbc_filter_ether.h"
 
 void print_byte(Byte byte) {
 	int c = 8;
@@ -85,12 +89,21 @@ fbc_Packet *init_packet(Byte *buf)
 	return fbc_init_packet_by_protocol(buf, FBC_PROTOCOL_ETHER);
 }
 
+int contain_protocol(fbc_Packet *packet, protocol_t p)
+{
+	if (! packet)	return 0;
+	return fbc_protocol_equal(packet->protocol, p) || contain_protocol(packet->next_packet, p);
+}
+
 int main()
 {
 	int s;
 	Byte buf[1600];
 	int nbytes;
 	fbc_Packet  *packet = 0;
+	fbc_Filter *filter = 0;
+	struct ether_addr dst;
+	memset((void *)&dst, 0xff, sizeof(struct ether_addr));
 
 
 	s = socket(PF_PACKET, SOCK_RAW, htons(ETH_P_ALL));
@@ -99,21 +112,26 @@ int main()
 		return -1;
 	}
 
+	filter = fbc_alloc_filter();
+	if (! filter)	return 0;
+
+	fbc_filter_set_protocol(filter, FBC_PROTOCOL_ETHER);
+	fbc_filter_add_func(filter, fbc_filter_ether_dstaddr, &dst, sizeof(struct ether_addr));
+
 	while (1) {
 
 		nbytes = recv(s, buf, sizeof(buf), 0);
 
 		if (nbytes) {
-			printf("Get packet, %dbytes\n", nbytes);
-			/* print_raw(buf, nbytes); */
-
 			packet = init_packet(buf);
 
-			(packet->fbc_print_packet)(stdout, "", packet);
+			if (fbc_filter_packet(packet, filter)) {
+				(packet->fbc_print_packet)(stdout, "", packet);
+				printf("\n");
+			}
 
 			(packet->fbc_destroy_packet)(packet);
 
-			printf("\n");
 		} else {
 			printf("Get no packet\n");
 		}

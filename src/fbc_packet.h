@@ -45,6 +45,7 @@ typedef struct fbc_Packet fbc_Packet;
 
 fbc_Packet *fbc_init_packet_by_protocol(Byte *buf, protocol_t p);
 fbc_Packet *fbc_alloc_packet();
+void fbc_dealloc_packet(fbc_Packet *packet);
 void fbc_network_protocol_to_fbc_protocol(unsigned short np, protocol_t fp);
 
 #endif

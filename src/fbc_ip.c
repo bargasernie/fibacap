@@ -62,8 +62,6 @@ void fbc_ip_destroy_packet(fbc_Packet *packet)
 
 fbc_Packet *fbc_ip_analyze_playload(fbc_Packet *packet)
 {
-	fbc_set_protocol(packet->next_protocol, FBC_PROTOCOL_NULL);
-	
 	return fbc_init_packet_by_protocol(packet->playload, packet->next_protocol);
 }
 
@@ -88,6 +86,8 @@ void fbc_ip_print_packet(FILE *out, char *pre, fbc_Packet *packet)
 	fbc_ip_addr_to_string(&(iph->ip_dst), ipstring, sizeof(ipstring));
 	fprintf(out, "%sDst Address: %s\n", pre, ipstring);
 
+	/* TODO: print option data and padding in header.
+	 */
 
 	if (packet->next_packet) {
 		packet->next_packet->fbc_print_packet(out, pre, packet->next_packet);

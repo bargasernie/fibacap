@@ -10,6 +10,8 @@
 #include "fbc_ether.h"
 #include "fbc_ip.h"
 #include "fbc_arp.h"
+#include "fbc_tcp.h"
+#include "fbc_udp.h"
 
 
 static struct Protocol_Table {
@@ -19,6 +21,8 @@ static struct Protocol_Table {
 	{ FBC_PROTOCOL_ETHER, fbc_ether_init_packet },
 	{ FBC_PROTOCOL_IP   , fbc_ip_init_packet    },
 	{ FBC_PROTOCOL_ARP  , fbc_arp_init_packet   },
+	{ FBC_PROTOCOL_TCP  , fbc_tcp_init_packet   },
+	{ FBC_PROTOCOL_UDP  , fbc_udp_init_packet   },
 	{ FBC_PROTOCOL_NULL , 0                     }
 };
 
@@ -50,6 +54,11 @@ fbc_Packet *fbc_alloc_packet()
 		return NULL;
 	}
 	return packet;
+}
+
+void fbc_dealloc_packet(fbc_Packet *packet)
+{
+	free(packet);
 }
 
 void fbc_network_protocol_to_fbc_protocol(unsigned short np, protocol_t fp)

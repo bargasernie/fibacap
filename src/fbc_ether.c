@@ -114,6 +114,6 @@ void fbc_ether_destroy_packet(struct fbc_Packet *packet)
 			packet->next_packet->fbc_destroy_packet(packet->next_packet);
 		}
 		packet->next_packet = NULL;
-		free(packet);
+		fbc_dealloc_packet(packet);
 	}
 }

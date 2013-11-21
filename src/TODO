@@ -21,5 +21,7 @@
 3	F	Get ethernet frame
 4	F	Get IP packet
 5	F	Arp packet
-6		TCP packet
-7		UDP packet
+6	F	TCP packet
+7	F	UDP packet
+8	F	add fbc_Filter
+9		add fbc_filter_ether
