@@ -58,6 +58,7 @@ fbc_Filter *fbc_alloc_filter()
 		return NULL;
 	}
 	filter->next_filter = NULL;
+	filter->filter_count = 0;
 	DPRINTF("-DEBUG- fbc_alloc_filter:\tallocate memory for filter\n");
 	return filter;
 }
