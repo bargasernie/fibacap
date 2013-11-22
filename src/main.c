@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -11,6 +12,7 @@
 
 #include "fbc_common.h"
 #include "fbc_packet.h"
+#include "fbc_pf.h"
 #include "fbc_ether.h"
 #include "fbc_filter.h"
 #include "fbc_filter_ether.h"
@@ -103,6 +105,11 @@ int main()
 	fbc_Packet  *packet = 0;
 	fbc_Filter *filter = 0;
 	struct ether_addr dst;
+	char filename[128] = "packetfilter/ether.pf";
+
+
+	filter = fbc_read_pf_init_filter(filename);
+
 	memset((void *)&dst, 0xff, sizeof(struct ether_addr));
 
 
@@ -144,6 +151,7 @@ int main()
 
 	fbc_destroy_filter(filter);
 
+	close(s);
 	return 0;
 }
 
