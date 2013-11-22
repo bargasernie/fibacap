@@ -1,0 +1,16 @@
+# This file define the packet filter of ether protocol
+
+# define protocol, protocol condition
+$ETHER
+
+# destion mac address
+# value is mac address
+%dst=ff:ff:ff:ff:ff:ff
+
+# source mac address
+# value is mac address
+%src=ff:ff:ff:ff:ff:ff
+
+# next_protocol
+# value is decimal integer of hexmal integer
+%next_protocol=0x11
