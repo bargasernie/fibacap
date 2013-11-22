@@ -22,6 +22,8 @@ typedef struct fbc_Filter {
 } fbc_Filter;
 
 fbc_Filter *fbc_alloc_filter();
+void fbc_dealloc_filter(fbc_Filter *filter);
+void fbc_destroy_filter(fbc_Filter *filter);
 int fbc_filter_add_func(fbc_Filter *fiter, fbc_filter_func_t func, fbc_filter_arg_t arg, int arg_size);
 void fbc_filter_set_protocol(fbc_Filter *fiter, protocol_t p);
 int fbc_filter_packet(fbc_Packet *packet, fbc_Filter *filter);
