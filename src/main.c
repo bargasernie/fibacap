@@ -123,19 +123,26 @@ int main()
 		nbytes = recv(s, buf, sizeof(buf), 0);
 
 		if (nbytes) {
+			DPRINTF("-DEBUG- main:\tget packet\n");
+
 			packet = init_packet(buf);
+			DPRINTF("-DEBUG- main:\tinit packet\n");
 
 			if (fbc_filter_packet(packet, filter)) {
 				(packet->fbc_print_packet)(stdout, "", packet);
 				printf("\n");
 			}
 
+
+			DPRINTF("-DEBUG- main:\tdestroy packet\n");
 			(packet->fbc_destroy_packet)(packet);
 
 		} else {
 			printf("Get no packet\n");
 		}
 	}
+
+	fbc_destroy_filter(filter);
 
 	return 0;
 }
