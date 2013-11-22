@@ -1,0 +1,102 @@
+This file define the format in packet filter file.
+
+1. Synopsis
+
+The file is a line-based file, that is, one condition, one including file or one comment per line.
+A condition is a filter, we use the condition to filter the packet,
+all condition in the file is `LOGICAL AND`.
+
+There are 8 types of object in the file. Each file occupy one line.
+
+	1. Comment (#)
+	2. File (@include)
+	3. Protocol ($)
+	4. Attribute (%)
+	5. Description (&)
+	6. Value
+	7. Condition
+	8. Blank line
+
+2. Define Some Concept
+
+Before we introduce those objects, we first define some concept.
+
+2.1 In-Line-Blank
+	In-Line-Bank consists of blanks that can not indicate one line, such space, Tab.
+
+3. Define Object
+
+3.1. Comment (#)
+
+	Comment is line-based comment. It begin with `#`, and last to the end of line. In-Line-Blank can leading or following comments. But we do not support conditions leading comments. Below are some examples, | is the left boundery of the file, \n is the new line character.
+
+	Comment					Correct ?
+	|# this is coment\n			Y
+	|   # this is comment\n			Y
+	|some-none-blank # this is comment\n	N
+
+3.2. File (@)
+
+	File indicate include another file, File is leading with @. A file included, is like replacing the line with the whole included file. The format is:
+
+	@<path-to-file>
+
+Examples:
+
+	File					Correct ?
+	|@/tmp/file1\n				Y
+	|     @/tmp/file2     \n		Y
+	|@  /tmp/file3\n			N, space is not allow after @
+
+3.3. Protocol
+
+	Protocol indicate a protocol name, it is a condition. It begin with $. When an Protocol condition occurs, all attributes defined below are those in the protocol, until another Protocol condition occurs. Protocol names are defined in fbc_common.h Format is:
+
+	$<Ptotocol_name>
+
+Examples:
+
+	Protocol				Correct ?
+	|$TCP\n					Y
+	|   $ETHER	\n			Y
+	|$  ETHER	\n			N, in-line-blank is not allow after $
+
+3.4. Attribute (%)
+
+	Attribute is a field defined in a protocol. The protocol is the nearest above protocol. The Attribute condition format is:
+
+	%Attribute=<Value>
+
+All Attribute has is own type, please reference to the protocol attribute file.
+
+Examples:
+
+	Attribute				Correct ?
+	|%src=192.168.1.1\n			Y
+	|  %src=192.168.1.1  \n			Y
+	|%  src=192.168.1.1\n			N
+	|%src = 192.168.1.1\n			N
+
+3.5. Description (&)
+
+	Description is used to description attribute. Some attribute prefer description than value, such as, checksum, it prefer good or bad, rather than checksum is 0x1234. Format is:
+
+	&Description
+
+Examples:
+
+	Description				Correct ?
+	|%checksum=&good\n			Y
+	|%checksum=& good\n			N
+
+3.6. Value
+
+	Value is the value of an attribute. no in-line-blank is allowed among value.
+
+3.7. Condition
+
+	Condition is the filter condition, all condition in the file are `LOGICAL AND`. One condition occupyis one line. Condition consists of Protocol condition and Attribute condition.
+
+3.8. Blank line
+
+	A line consists of in-line-blank and \n. Blank lines will be ignored.
