@@ -1,10 +1,22 @@
 #ifndef _FBC_COMMON_H_
 #define _FBC_COMMON_H_
 
+#ifdef	FBC_DEBUG
+	#define	DPRINTF(fmt)			printf(fmt)
+	#define	DPRINTF1(fmt, a)		printf(fmt, (a))
+	#define	DPRINTF2(fmt, a, b)		printf(fmt, (a), (b))
+	#define	DPRINTF3(fmt, a, b, c)		printf(fmt, (a), (b), (c))
+	#define	DPRINTF4(fmt, a, b, c, d)	printf(fmt, (a), (b), (c), (d))
+#else
+	#define	DPRINTF(fmt)
+	#define	DPRINTF1(fmt, a)
+	#define	DPRINTF2(fmt, a, b)
+	#define	DPRINTF3(fmt, a, b, c)
+	#define	DPRINTF4(fmt, a, b, c, d)
+#endif
 
 typedef unsigned char Byte;
 typedef char (protocol_t)[16];
-
 
 typedef unsigned int FBC_DEF_PROTOCOL;
 
