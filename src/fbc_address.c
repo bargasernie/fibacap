@@ -39,3 +39,18 @@ const char *fbc_get_hex_string(Byte *buf, int len, char *hexstring)
 	}
 	return hexstring;
 }
+
+void fbc_ether_addr_pton(const char *addr, Byte *dst, int size)
+{
+#define char_to_hex(c)							\
+	(((c) >= '0' && (c) <= '9')	? ((c) - '0') 		: 	\
+	 ((c) >= 'A' && (c) <= 'Z') 	? ((c) - 'A' + 10) 	: 	\
+					  ((c) - 'a' + 10) )
+	
+	dst[0] = (Byte)((char_to_hex(addr[0]) * 16 + char_to_hex(addr[1])) 0xff);
+	dst[1] = (Byte)((char_to_hex(addr[3]) * 16 + char_to_hex(addr[4])) 0xff);
+	dst[2] = (Byte)((char_to_hex(addr[6]) * 16 + char_to_hex(addr[7])) 0xff);
+	dst[3] = (Byte)((char_to_hex(addr[9]) * 16 + char_to_hex(addr[10])) 0xff);
+	dst[4] = (Byte)((char_to_hex(addr[12]) * 16 + char_to_hex(addr[13])) 0xff);
+	dst[5] = (Byte)((char_to_hex(addr[15]) * 16 + char_to_hex(addr[16])) 0xff);
+}
