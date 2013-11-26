@@ -1,6 +1,7 @@
 #ifndef _FBC_COMMON_H_
 #define _FBC_COMMON_H_
 
+#define	FBC_DEBUG
 #ifdef	FBC_DEBUG
 	#define	DPRINTF(fmt)			printf(fmt)
 	#define	DPRINTF1(fmt, a)		printf(fmt, (a))
@@ -17,6 +18,11 @@
 
 typedef unsigned char Byte;
 typedef char (protocol_t)[16];
+typedef char (attribute_t)[16];
+
+#define FBC_ATTRIBUTE_NULL	""
+#include <string.h>
+#define fbc_attribute_equal(a, b)	(strcmp((a), (b)) == 0)
 
 typedef unsigned int FBC_DEF_PROTOCOL;
 

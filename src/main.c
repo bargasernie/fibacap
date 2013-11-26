@@ -110,6 +110,8 @@ int main()
 
 	filter = fbc_read_pf_init_filter(filename);
 
+	return 0;
+
 	memset((void *)&dst, 0xff, sizeof(struct ether_addr));
 
 

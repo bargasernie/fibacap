@@ -8,7 +8,15 @@ int fbc_filter_add_func(fbc_Filter *filter, fbc_filter_func_t func, fbc_filter_a
 	}
 
 	filter->fbc_filter_func[filter->filter_count] = func;
-	filter->fbc_filter_arg[filter->filter_count] = arg;
+	/* filter->fbc_filter_arg[filter->filter_count] = arg; */
+	/* we allocate memory for argment here, so we need to deallocate it */
+	/* we need to check whether the allocation is successfully */
+	filter->fbc_filter_arg[filter->filter_count] = (fbc_filter_arg_t)malloc(arg_size);
+	if (! filter->fbc_filter_arg[filter->filter_count]) {
+		fprintf(stderr, "Can not allocate memory to filter argments\n");
+		return FBC_FAILED;
+	}
+	memcpy(filter->fbc_filter_arg[filter->filter_count], arg, arg_size);
 	filter->fbc_filter_arg_size[filter->filter_count] = arg_size;
 	filter->filter_count++;
 	DPRINTF("-DEBUG- fbc_filter_add_func:\tadd func into filter\n");
@@ -81,5 +89,10 @@ void fbc_destroy_filter(fbc_Filter *filter)
 	if (filter) {
 		fbc_destroy_filter(filter->next_filter);
 		fbc_dealloc_filter(filter);
+		while (filter->filter_count) {
+			free(filter->fbc_filter_arg[filter->filter_count]);
+			filter->filter_count--;
+		}
+		
 	}
 }
