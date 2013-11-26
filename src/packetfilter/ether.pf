@@ -13,4 +13,4 @@ $ETHER
 
 # next_protocol
 # value is decimal integer of hexmal integer
-%next_protocol=0x11
+#%next_protocol=0x11
