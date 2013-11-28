@@ -47,10 +47,10 @@ void fbc_ether_addr_pton(const char *addr, Byte *dst, int size)
 	 ((c) >= 'A' && (c) <= 'Z') 	? ((c) - 'A' + 10) 	: 	\
 					  ((c) - 'a' + 10) )
 	
-	dst[0] = (Byte)((char_to_hex(addr[0]) * 16 + char_to_hex(addr[1])) 0xff);
-	dst[1] = (Byte)((char_to_hex(addr[3]) * 16 + char_to_hex(addr[4])) 0xff);
-	dst[2] = (Byte)((char_to_hex(addr[6]) * 16 + char_to_hex(addr[7])) 0xff);
-	dst[3] = (Byte)((char_to_hex(addr[9]) * 16 + char_to_hex(addr[10])) 0xff);
-	dst[4] = (Byte)((char_to_hex(addr[12]) * 16 + char_to_hex(addr[13])) 0xff);
-	dst[5] = (Byte)((char_to_hex(addr[15]) * 16 + char_to_hex(addr[16])) 0xff);
+	dst[0] = (Byte)((char_to_hex(addr[0]) * 16 + char_to_hex(addr[1])) & 0xff);
+	dst[1] = (Byte)((char_to_hex(addr[3]) * 16 + char_to_hex(addr[4])) & 0xff);
+	dst[2] = (Byte)((char_to_hex(addr[6]) * 16 + char_to_hex(addr[7])) & 0xff);
+	dst[3] = (Byte)((char_to_hex(addr[9]) * 16 + char_to_hex(addr[10])) & 0xff);
+	dst[4] = (Byte)((char_to_hex(addr[12]) * 16 + char_to_hex(addr[13])) & 0xff);
+	dst[5] = (Byte)((char_to_hex(addr[15]) * 16 + char_to_hex(addr[16])) & 0xff);
 }

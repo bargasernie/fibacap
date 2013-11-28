@@ -104,16 +104,10 @@ int main()
 	int nbytes;
 	fbc_Packet  *packet = 0;
 	fbc_Filter *filter = 0;
-	struct ether_addr dst;
+
 	char filename[128] = "packetfilter/ether.pf";
 
-
 	filter = fbc_read_pf_init_filter(filename);
-
-	return 0;
-
-	memset((void *)&dst, 0xff, sizeof(struct ether_addr));
-
 
 	s = socket(PF_PACKET, SOCK_RAW, htons(ETH_P_ALL));
 	if (s <= 0) {
@@ -121,11 +115,10 @@ int main()
 		return -1;
 	}
 
-	filter = fbc_alloc_filter();
-	if (! filter)	return 0;
-
+	/*
 	fbc_filter_set_protocol(filter, FBC_PROTOCOL_ETHER);
 	fbc_filter_add_func(filter, fbc_filter_ether_dstaddr, &dst, sizeof(struct ether_addr));
+	*/
 
 	while (1) {
 

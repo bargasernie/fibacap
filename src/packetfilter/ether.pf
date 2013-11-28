@@ -3,14 +3,20 @@
 # define protocol, protocol condition
 $ETHER
 
-# destion mac address
+# destination mac address
 # value is mac address
-%dst=ff:ff:ff:ff:ff:ff
+#%dst=ff:ff:ff:ff:ff:ff
 
 # source mac address
 # value is mac address
-%src=ff:ff:ff:ff:ff:ff
+#%src=ff:ff:ff:ff:ff:ff
+
+
+# source or destination mac address
+# value is mac address
+#%addr=ff:ff:ff:ff:ff:ff
+
 
 # next_protocol
 # value is decimal integer of hexmal integer
-#%next_protocol=0x11
+%next_protocol=0x0806

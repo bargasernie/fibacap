@@ -72,6 +72,7 @@ fbc_attribute_map_t get_protocol_attribute_map(protocol_t protocol)
 int fbc_pf_add_filter_func(fbc_Filter *filter, char *attr, char *value)
 {
 	fbc_attribute_map_t protocol_attr_map = get_protocol_attribute_map(filter->protocol);
+	DPRINTF("-DEBUG- fbc_pf_add_filter_func: adding filter function\n");
 	if (! protocol_attr_map) {
 		fprintf(stderr, "Can not get protocol map for protocol %s\n", filter->protocol);
 		return 1;
@@ -123,6 +124,7 @@ fbc_Filter *fbc_read_pf_init_filter(const char *filename)
 				filter->next_filter = fbc_alloc_filter();
 				if (! filter->next_filter)	fbc_destroy_filter(extra_filter);
 				filter = filter->next_filter;
+				filter->next_filter = NULL;
 				fbc_set_protocol(filter->protocol, s+1);
 				DPRINTF1("-DEBUG- fbc_read_pf_init_filter: analyze protocol <%s>\n", s + 1);
 				break;
@@ -152,13 +154,15 @@ fbc_Filter *fbc_read_pf_init_filter(const char *filename)
 				DPRINTF1("-DEBUG- fbc_read_pf_init_filter: read unknown line: %s\n", s);
 				break;
 		}
-		
 	}
 
 	DPRINTF1("-DEBUG- fbc_read_pf_init_filter: close %s\n", filename);
 
 	free(line);
 	fclose(pf);
+
+	filter = extra_filter->next_filter;
+	fbc_dealloc_filter(extra_filter);
 
 	return filter;
 }
