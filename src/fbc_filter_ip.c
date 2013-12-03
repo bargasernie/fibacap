@@ -24,6 +24,8 @@ int fbc_filter_ip_add_addr_filter_func(fbc_Filter *filter, char *attr, char *val
 int fbc_filter_ip_add_version_filter_func(fbc_Filter *filter, char *attr, char *value);
 int fbc_filter_ip_add_hl_filter_func(fbc_Filter *filter, char *attr, char *value);
 int fbc_filter_ip_add_tos_filter_func(fbc_Filter *filter, char *attr, char *value);
+int fbc_filter_ip_add_tlen_filter_func(fbc_Filter *filter, char *attr, char *value);
+int fbc_filter_ip_add_id_filter_func(fbc_Filter *filter, char *attr, char *value);
 
 static struct fbc_attribute_map_list fbc_ip_attribute[32] = {
 	{ "src", fbc_filter_ip_add_src_filter_func },
@@ -32,6 +34,8 @@ static struct fbc_attribute_map_list fbc_ip_attribute[32] = {
 	{ "version", fbc_filter_ip_add_version_filter_func },
 	{ "hl", fbc_filter_ip_add_hl_filter_func },
 	{ "tos", fbc_filter_ip_add_tos_filter_func },
+	{ "tlen", fbc_filter_ip_add_tlen_filter_func },
+	{ "id", fbc_filter_ip_add_id_filter_func },
 	{ FBC_ATTRIBUTE_NULL, 0, }
 };
 
@@ -87,6 +91,22 @@ int fbc_filter_ip_tos(fbc_Packet *packet, fbc_filter_arg_t arg, int arg_size)
 	Byte tos = (((struct ip *)packet->header)->ip_tos) & 0xff;
 	DPRINTF("-DEBUG- fbc_filter_ip_tos:\tmatching type of service\n");
 	return (tos == *(Byte *)arg);
+}
+
+/* fbc_filter_func_t */
+int fbc_filter_ip_tlen(fbc_Packet *packet, fbc_filter_arg_t arg, int arg_size)
+{
+	u_int16_t tlen = ((struct ip *)packet->header)->ip_len;
+	DPRINTF("-DEBUG- fbc_filter_ip_tlen:\tmatching total length\n");
+	return (tlen == *(u_int16_t *)arg);
+}
+
+/* fbc_filter_func_t */
+int fbc_filter_ip_id(fbc_Packet *packet, fbc_filter_arg_t arg, int arg_size)
+{
+	u_int16_t id = ((struct ip *)packet->header)->ip_id;
+	DPRINTF("-DEBUG- fbc_filter_ip_id:\tmatching ip id\n");
+	return (id == *(u_int16_t *)arg);
 }
 
 /*
@@ -145,10 +165,30 @@ int fbc_filter_ip_add_hl_filter_func(fbc_Filter *filter, char *attr, char *value
 int fbc_filter_ip_add_tos_filter_func(fbc_Filter *filter, char *attr, char *value)
 {
 	Byte tos;
-	DPRINTF2("-DEBUG- fbc_filter_ip_add_hl_filter_func: <%s>=<%s>\n", attr, value);
+	DPRINTF2("-DEBUG- fbc_filter_ip_add_tos_filter_func: <%s>=<%s>\n", attr, value);
 	tos = (Byte)(string_to_uint(value) & 0xff);
 	fbc_filter_add_func(filter, fbc_filter_ip_tos, &tos, sizeof(tos));
 	DPRINTF("-DEBUG- fbc_filter_ip_add_tos_filter_func: add fbc_filter_filter_ip_tos into filter\n");
+	return 1;
+}
+
+int fbc_filter_ip_add_tlen_filter_func(fbc_Filter *filter, char *attr, char *value)
+{
+	u_int16_t tlen;
+	DPRINTF2("-DEBUG- fbc_filter_ip_add_tlen_filter_func: <%s>=<%s>\n", attr, value);
+	tlen = htons((u_int16_t)string_to_uint(value));
+	fbc_filter_add_func(filter, fbc_filter_ip_tlen, &tlen, sizeof(tlen));
+	DPRINTF("-DEBUG- fbc_filter_ip_add_tlen_filter_func: add fbc_filter_filter_ip_tlen into filter\n");
+	return 1;
+}
+
+int fbc_filter_ip_add_id_filter_func(fbc_Filter *filter, char *attr, char *value)
+{
+	u_int16_t id;
+	DPRINTF2("-DEBUG- fbc_filter_ip_add_id_filter_func: <%s>=<%s>\n", attr, value);
+	id = htons((u_int16_t)string_to_uint(value));
+	fbc_filter_add_func(filter, fbc_filter_ip_id, &id, sizeof(id));
+	DPRINTF("-DEBUG- fbc_filter_ip_add_id_filter_func: add fbc_filter_filter_ip_id into filter\n");
 	return 1;
 }
 
