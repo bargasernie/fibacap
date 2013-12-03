@@ -21,11 +21,13 @@
 int fbc_filter_ip_add_src_filter_func(fbc_Filter *filter, char *attr, char *value);
 int fbc_filter_ip_add_dst_filter_func(fbc_Filter *filter, char *attr, char *value);
 int fbc_filter_ip_add_addr_filter_func(fbc_Filter *filter, char *attr, char *value);
+int fbc_filter_ip_add_version_filter_func(fbc_Filter *filter, char *attr, char *value);
 
 static struct fbc_attribute_map_list fbc_ip_attribute[32] = {
 	{ "src", fbc_filter_ip_add_src_filter_func },
 	{ "dst", fbc_filter_ip_add_dst_filter_func },
 	{ "addr", fbc_filter_ip_add_addr_filter_func },
+	{ "version", fbc_filter_ip_add_version_filter_func },
 	{ FBC_ATTRIBUTE_NULL, 0, }
 };
 
@@ -57,6 +59,14 @@ int fbc_filter_ip_addr(fbc_Packet *packet, fbc_filter_arg_t arg, int arg_size)
 	void *dst = (void *)&(((struct ip *)(packet->header))->ip_dst);
 	DPRINTF("-DEBUG- fbc_filter_ip_addr:\tmatching ip addr\n");
 	return (memcmp(src, arg, arg_size) == 0) || (memcmp(dst, arg, arg_size) == 0);
+}
+
+/* fbc_filter_func_t */
+int fbc_filter_ip_version(fbc_Packet *packet, fbc_filter_arg_t arg, int arg_size)
+{
+	Byte ver = (((struct ip *)packet->header)->ip_v) & 0x0f;
+	DPRINTF("-DEBUG- fbc_filter_ip_version:\tmatching ip protocol version\n");
+	return (ver == *(Byte *)arg);
 }
 
 /*
@@ -109,6 +119,16 @@ int fbc_filter_ip_add_addr_filter_func(fbc_Filter *filter, char *attr, char *val
 	fbc_ip_addr_pton(value, addr, sizeof(addr));
 	fbc_filter_add_func(filter, fbc_filter_ip_addr, addr, sizeof(addr));
 	DPRINTF("-DEBUG- fbc_filter_ip_add_addr_filter_func: add fbc_filcter_ip_addr into filter\n");
+	return 1;
+}
+
+int fbc_filter_ip_add_version_filter_func(fbc_Filter *filter, char *attr, char *value)
+{
+	Byte version;
+	DPRINTF2("-DEBUG- fbc_filter_ip_add_version_filter_func: <%s>=<%s>\n", attr, value);
+	version = (Byte)(string_to_uint(value) & 0x0f);
+	fbc_filter_add_func(filter, fbc_filter_ip_version, &version, sizeof(version));
+	DPRINTF("-DEBUG- fbc_filter_ip_add_version_filter_func: add fbc_filter_filter_ip_version into filter\n");
 	return 1;
 }
 
