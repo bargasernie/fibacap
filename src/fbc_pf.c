@@ -12,10 +12,11 @@
 
 /* include protocol filter header for protocol map */
 #include "fbc_filter_ether.h"
+#include "fbc_filter_ip.h"
 
 static struct fbc_protocol_map_list protocol_map[128] = {
 	{ FBC_PROTOCOL_ETHER, fbc_ether_attribute_map }, /* implement ether_attribute_map */
-	{ FBC_PROTOCOL_IP, 0 },
+	{ FBC_PROTOCOL_IP,    fbc_ip_attribute_map },
 	{ FBC_PROTOCOL_TCP, 0 },
 	{ FBC_PROTOCOL_NULL, 0 }
 };
