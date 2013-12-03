@@ -11,8 +11,8 @@ fbc_add_func_into_filter_t fbc_ether_attribute_map(char *attr);
 /* Filter function
  *
  */
-int fbc_filter_ether_srcaddr(fbc_Packet *packet, fbc_filter_arg_t arg, int arg_size);
-int fbc_filter_ether_dstaddr(fbc_Packet *packet, fbc_filter_arg_t arg, int arg_size);
+/* int fbc_filter_ether_srcaddr(fbc_Packet *packet, fbc_filter_arg_t arg, int arg_size); */
+/* int fbc_filter_ether_dstaddr(fbc_Packet *packet, fbc_filter_arg_t arg, int arg_size); */
 
 
 #endif
