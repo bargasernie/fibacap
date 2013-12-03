@@ -54,3 +54,8 @@ void fbc_ether_addr_pton(const char *addr, Byte *dst, int size)
 	dst[4] = (Byte)((char_to_hex(addr[12]) * 16 + char_to_hex(addr[13])) & 0xff);
 	dst[5] = (Byte)((char_to_hex(addr[15]) * 16 + char_to_hex(addr[16])) & 0xff);
 }
+
+void fbc_ip_addr_pton(const char *addr, Byte *dst, int size)
+{
+	inet_pton(AF_INET, addr, dst);
+}

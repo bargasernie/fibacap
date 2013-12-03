@@ -16,4 +16,6 @@ const char *fbc_get_hex_string(Byte *addr, int len, char *addrstring);
 
 void fbc_ether_addr_pton(const char *addr, Byte *dst, int size);
 
+void fbc_ip_addr_pton(const char *addr, Byte *dst, int size);
+
 #endif
