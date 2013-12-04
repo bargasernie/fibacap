@@ -81,7 +81,7 @@ void fbc_ip_print_packet(FILE *out, char *pre, fbc_Packet *packet)
 			(ntohs(iph->ip_off) & IP_DF ? 1 : 0), 
 			(ntohs(iph->ip_off) & IP_MF ? 1 : 0)
 		);
-	fprintf(out, "%sFragment Offset Field: 0x%04x\n", pre, ntohs(iph->ip_off) & 0xffff);
+	fprintf(out, "%sFragment Offset Field: 0x%04x\n", pre, ntohs(iph->ip_off) & IP_OFFMASK);
 	fprintf(out, "%sTime Of Live: %d\n", pre, iph->ip_ttl & 0xff);
 	fprintf(out, "%sNext Protocol: %s(0x%02x)\n", pre, packet->next_protocol, iph->ip_p & 0xff);
 	fprintf(out, "%sChecksum: 0x%04x\n", pre, iph->ip_sum);
