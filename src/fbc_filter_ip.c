@@ -27,6 +27,9 @@ int fbc_filter_ip_add_tos_filter_func(fbc_Filter *filter, char *attr, char *valu
 int fbc_filter_ip_add_tlen_filter_func(fbc_Filter *filter, char *attr, char *value);
 int fbc_filter_ip_add_id_filter_func(fbc_Filter *filter, char *attr, char *value);
 int fbc_filter_ip_add_rf_filter_func(fbc_Filter *filter, char *attr, char *value);
+int fbc_filter_ip_add_df_filter_func(fbc_Filter *filter, char *attr, char *value);
+int fbc_filter_ip_add_mf_filter_func(fbc_Filter *filter, char *attr, char *value);
+int fbc_filter_ip_add_fragoff_filter_func(fbc_Filter *filter, char *attr, char *value);
 
 static struct fbc_attribute_map_list fbc_ip_attribute[32] = {
 	{ "src", fbc_filter_ip_add_src_filter_func },
@@ -38,6 +41,8 @@ static struct fbc_attribute_map_list fbc_ip_attribute[32] = {
 	{ "tlen", fbc_filter_ip_add_tlen_filter_func },
 	{ "id", fbc_filter_ip_add_id_filter_func },
 	{ "RF", fbc_filter_ip_add_rf_filter_func },
+	{ "DF", fbc_filter_ip_add_df_filter_func },
+	{ "fragoff", fbc_filter_ip_add_fragoff_filter_func },
 	{ FBC_ATTRIBUTE_NULL, 0, }
 };
 
@@ -114,9 +119,35 @@ int fbc_filter_ip_id(fbc_Packet *packet, fbc_filter_arg_t arg, int arg_size)
 /* fbc_filter_func_t */
 int fbc_filter_ip_rf(fbc_Packet *packet, fbc_filter_arg_t arg, int arg_size)
 {
-	u_int16_t flags = ((struct ip *)packet->header)->ip_off;
-	DPRINTF("-DEBUG- fbc_filter_ip_rf:\tmatching ip flags reserve\n");
+	u_int16_t flags = ntohs(((struct ip *)packet->header)->ip_off);
+	DPRINTF("-DEBUG- fbc_filter_ip_rf:\tmatching ip flags RF\n");
 	return ((flags & IP_RF) == *(u_int16_t *)arg);
+}
+
+/* fbc_filter_func_t */
+int fbc_filter_ip_df(fbc_Packet *packet, fbc_filter_arg_t arg, int arg_size)
+{
+	u_int16_t flags = ntohs(((struct ip *)packet->header)->ip_off);
+	DPRINTF("-DEBUG- fbc_filter_ip_df:\tmatching ip flags DF\n");
+	DPRINTF2("-DEBUG- fbc_filter_ip_df:\tPacket DF: %d, Arg DF: %d\n", (flags & IP_DF), *(u_int16_t *)arg);
+
+	return ((flags & IP_DF) == *(u_int16_t *)arg);
+}
+
+/* fbc_filter_func_t */
+int fbc_filter_ip_mf(fbc_Packet *packet, fbc_filter_arg_t arg, int arg_size)
+{
+	u_int16_t flags = ntohs(((struct ip *)packet->header)->ip_off);
+	DPRINTF("-DEBUG- fbc_filter_ip_mf:\tmatching ip flags MF\n");
+	return ((flags & IP_MF) == *(u_int16_t *)arg);
+}
+
+/* fbc_filter_func_t */
+int fbc_filter_ip_fragoff(fbc_Packet *packet, fbc_filter_arg_t arg, int arg_size)
+{
+	u_int16_t fragoff = ntohs(((struct ip *)packet->header)->ip_off);
+	DPRINTF("-DEBUG- fbc_filter_ip_mf:\tmatching ip fragment offset\n");
+	return ((fragoff & IP_OFFMASK) == *(u_int16_t *)arg);
 }
 
 /*
@@ -213,12 +244,62 @@ int fbc_filter_ip_add_rf_filter_func(fbc_Filter *filter, char *attr, char *value
 	} else if (rf == 0) {
 		rf = 0;
 	} else {
-		DPRINTF("-DEBUG- fbc_filter_ip_add_rf_func: ip RF is not 1 or 0, set to default 0");
+		DPRINTF("-DEBUG- fbc_filter_ip_add_rf_func: ip RF is not 1 or 0, set to default 0\n");
 		rf = 0;
 	}
 
 	fbc_filter_add_func(filter, fbc_filter_ip_rf, &rf, sizeof(rf));
 	DPRINTF("-DEBUG- fbc_filter_ip_add_rf_filter_func: add fbc_filter_filter_ip_rf into filter\n");
+	return 1;
+}
+
+int fbc_filter_ip_add_df_filter_func(fbc_Filter *filter, char *attr, char *value)
+{
+	u_int16_t df;
+	DPRINTF2("-DEBUG- fbc_filter_ip_add_df_filter_func: <%s>=<%s>\n", attr, value);
+	df = (u_int16_t)(string_to_uint(value) & 0xffff);
+
+	if (df == 1) {
+		df = IP_DF;
+	} else if (df == 0) {
+		df = 0;
+	} else {
+		DPRINTF("-DEBUG- fbc_filter_ip_add_df_func: ip DF is not 1 or 0, set to default 0\n");
+		df = 0;
+	}
+
+	fbc_filter_add_func(filter, fbc_filter_ip_df, &df, sizeof(df));
+	DPRINTF("-DEBUG- fbc_filter_ip_add_df_filter_func: add fbc_filter_filter_ip_df into filter\n");
+	return 1;
+}
+
+int fbc_filter_ip_add_mf_filter_func(fbc_Filter *filter, char *attr, char *value)
+{
+	u_int16_t mf;
+	DPRINTF2("-DEBUG- fbc_filter_ip_add_mf_filter_func: <%s>=<%s>\n", attr, value);
+	mf = (u_int16_t)(string_to_uint(value) & 0xffff);
+
+	if (mf == 1) {
+		mf = IP_MF;
+	} else if (mf == 0) {
+		mf = 0;
+	} else {
+		DPRINTF("-DEBUG- fbc_filter_ip_add_mf_func: ip MF is not 1 or 0, set to default 0\n");
+		mf = 0;
+	}
+
+	fbc_filter_add_func(filter, fbc_filter_ip_mf, &mf, sizeof(mf));
+	DPRINTF("-DEBUG- fbc_filter_ip_add_mf_filter_func: add fbc_filter_filter_ip_mf into filter\n");
+	return 1;
+}
+
+int fbc_filter_ip_add_fragoff_filter_func(fbc_Filter *filter, char *attr, char *value)
+{
+	u_int16_t fragoff;
+	DPRINTF2("-DEBUG- fbc_filter_ip_add_id_filter_func: <%s>=<%s>\n", attr, value);
+	fragoff = (u_int16_t)string_to_uint(value) & 0xffff;
+	fbc_filter_add_func(filter, fbc_filter_ip_fragoff, &fragoff, sizeof(fragoff));
+	DPRINTF("-DEBUG- fbc_filter_ip_add_fragoff_filter_func: add fbc_filter_filter_ip_fragoff into filter\n");
 	return 1;
 }
 
