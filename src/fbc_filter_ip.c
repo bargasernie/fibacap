@@ -26,6 +26,7 @@ int fbc_filter_ip_add_hl_filter_func(fbc_Filter *filter, char *attr, char *value
 int fbc_filter_ip_add_tos_filter_func(fbc_Filter *filter, char *attr, char *value);
 int fbc_filter_ip_add_tlen_filter_func(fbc_Filter *filter, char *attr, char *value);
 int fbc_filter_ip_add_id_filter_func(fbc_Filter *filter, char *attr, char *value);
+int fbc_filter_ip_add_rf_filter_func(fbc_Filter *filter, char *attr, char *value);
 
 static struct fbc_attribute_map_list fbc_ip_attribute[32] = {
 	{ "src", fbc_filter_ip_add_src_filter_func },
@@ -36,6 +37,7 @@ static struct fbc_attribute_map_list fbc_ip_attribute[32] = {
 	{ "tos", fbc_filter_ip_add_tos_filter_func },
 	{ "tlen", fbc_filter_ip_add_tlen_filter_func },
 	{ "id", fbc_filter_ip_add_id_filter_func },
+	{ "RF", fbc_filter_ip_add_rf_filter_func },
 	{ FBC_ATTRIBUTE_NULL, 0, }
 };
 
@@ -107,6 +109,14 @@ int fbc_filter_ip_id(fbc_Packet *packet, fbc_filter_arg_t arg, int arg_size)
 	u_int16_t id = ((struct ip *)packet->header)->ip_id;
 	DPRINTF("-DEBUG- fbc_filter_ip_id:\tmatching ip id\n");
 	return (id == *(u_int16_t *)arg);
+}
+
+/* fbc_filter_func_t */
+int fbc_filter_ip_rf(fbc_Packet *packet, fbc_filter_arg_t arg, int arg_size)
+{
+	u_int16_t flags = ((struct ip *)packet->header)->ip_off;
+	DPRINTF("-DEBUG- fbc_filter_ip_rf:\tmatching ip flags reserve\n");
+	return ((flags & IP_RF) == *(u_int16_t *)arg);
 }
 
 /*
@@ -189,6 +199,26 @@ int fbc_filter_ip_add_id_filter_func(fbc_Filter *filter, char *attr, char *value
 	id = htons((u_int16_t)string_to_uint(value));
 	fbc_filter_add_func(filter, fbc_filter_ip_id, &id, sizeof(id));
 	DPRINTF("-DEBUG- fbc_filter_ip_add_id_filter_func: add fbc_filter_filter_ip_id into filter\n");
+	return 1;
+}
+
+int fbc_filter_ip_add_rf_filter_func(fbc_Filter *filter, char *attr, char *value)
+{
+	u_int16_t rf;
+	DPRINTF2("-DEBUG- fbc_filter_ip_add_rf_filter_func: <%s>=<%s>\n", attr, value);
+	rf = (u_int16_t)(string_to_uint(value) & 0xffff);
+
+	if (rf == 1) {
+		rf = IP_RF;
+	} else if (rf == 0) {
+		rf = 0;
+	} else {
+		DPRINTF("-DEBUG- fbc_filter_ip_add_rf_func: ip RF is not 1 or 0, set to default 0");
+		rf = 0;
+	}
+
+	fbc_filter_add_func(filter, fbc_filter_ip_rf, &rf, sizeof(rf));
+	DPRINTF("-DEBUG- fbc_filter_ip_add_rf_filter_func: add fbc_filter_filter_ip_rf into filter\n");
 	return 1;
 }
 
