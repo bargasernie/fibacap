@@ -6,6 +6,13 @@
 
 #define MAX_SIZE_IN_LINE 1024
 
+#define FBC_LANG_FLAG_FILE 	'@'
+#define FBC_LANG_FLAG_PROTOCOL 	'$'
+#define FBC_LANG_FLAG_ATTRIBUTE '%'
+#define FBC_LANG_FLAG_DESCRIPT 	'&'
+#define FBC_LANG_FLAG_COMMENT 	'#'
+
+#define string_arg_size(s)	(strlen(s) + 1)
 
 typedef int (*fbc_add_func_into_filter_t)(fbc_Filter *filter, char *attr, char *value);
 typedef fbc_add_func_into_filter_t (*fbc_attribute_map_t)(char *attr); 

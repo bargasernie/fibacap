@@ -120,7 +120,7 @@ fbc_Filter *fbc_read_pf_init_filter(const char *filename)
 		s = fbc_first_not_blank(line);
 		fbc_cut_tail_blank(s);
 		switch (*s) {
-			case '$':
+			case FBC_LANG_FLAG_PROTOCOL:
 				DPRINTF1("-DEBUG- fbc_read_pf_init_filter: read protocol %s\n", s);
 				filter->next_filter = fbc_alloc_filter();
 				if (! filter->next_filter)	fbc_destroy_filter(extra_filter);
@@ -129,7 +129,7 @@ fbc_Filter *fbc_read_pf_init_filter(const char *filename)
 				fbc_set_protocol(filter->protocol, s+1);
 				DPRINTF1("-DEBUG- fbc_read_pf_init_filter: analyze protocol <%s>\n", s + 1);
 				break;
-			case '%':
+			case FBC_LANG_FLAG_ATTRIBUTE:
 				DPRINTF1("-DEBUG- fbc_read_pf_init_filter: read attribute %s\n", s);
 				fbc_fetch_attr_value(s + 1, &attr, &value);
 				if (attribute_equal(attr, ATTRIBUTE_NULL)) {
@@ -147,9 +147,11 @@ fbc_Filter *fbc_read_pf_init_filter(const char *filename)
 				break;
 			case '\0':
 				break;
-			case '#':
+			case FBC_LANG_FLAG_DESCRIPT:
 				break;
-			case '@':
+			case FBC_LANG_FLAG_COMMENT:
+				break;
+			case FBC_LANG_FLAG_FILE:
 				break;
 			default:
 				DPRINTF1("-DEBUG- fbc_read_pf_init_filter: read unknown line: %s\n", s);
