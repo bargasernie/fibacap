@@ -1,8 +1,10 @@
 #include <netinet/ip.h>
+#include <string.h>
 #include "fbc_filter_ip.h"
 #include "fbc_pf.h"
 #include "fbc_address.h"
 #include "fbc_lib.h"
+#include "fbc_checksum.h"
 
 /* If you want to add an protocol be filtered, there are several parts:
  *
@@ -12,7 +14,6 @@
  * 	4. attribute map
  * 	5. attribute map function
  */
-
 
 /* 
  * 4. attribute map
@@ -168,6 +169,26 @@ int fbc_filter_ip_check(fbc_Packet *packet, fbc_filter_arg_t arg, int arg_size)
 	DPRINTF("-DEBUG- fbc_filter_ip_check:\tmatching ip header checksum\n");
 	DPRINTF2("-DEBUG- fbc_filter_ip_check:\tPacket checksum: %d, Arg: %d\n", check, *(u_int16_t *)arg);
 	return (check == *(u_int16_t *)arg);
+}
+
+/* fbc_filter_func_t */
+int fbc_filter_ip_check_descript(fbc_Packet *packet, fbc_filter_arg_t arg, int arg_size)
+{
+	unsigned short checksum;
+	int hlen;
+
+	hlen = ((struct ip *)packet->header)->ip_hl & 0x0f;
+	checksum = get_ip_checksum(packet->header, hlen << 2);
+	DPRINTF1("-DEBUG- fbc_filter_ip_check_descript:\tcalculate checksum for the whole ip header: %d\n", checksum);
+
+	if (strcmp((char *)arg, "good") == 0) {
+		return (checksum == 0 ? 1 : 0);
+	} else if (strcmp((char *)arg, "bad") == 0) {
+		return (checksum == 0 ? 0 : 1);
+	} else {
+		fprintf(stderr, "fbc_filter_ip_check_descript: Unknown description of ip checksum filter: %s\n", (char *)arg);
+		return 0;
+	}
 }
 
 /*
@@ -337,9 +358,20 @@ int fbc_filter_ip_add_check_filter_func(fbc_Filter *filter, char *attr, char *va
 {
 	u_int16_t check;
 	DPRINTF2("-DEBUG- fbc_filter_ip_add_check_filter_func: <%s>=<%s>\n", attr, value);
-	check = htons((u_int16_t)(string_to_uint(value) & 0xffff));
-	fbc_filter_add_func(filter, fbc_filter_ip_check, &check, sizeof(check));
-	DPRINTF("-DEBUG- fbc_filter_ip_add_check_filter_func: add fbc_filter_filter_ip_check into filter\n");
+	if (value[0] == FBC_LANG_FLAG_DESCRIPT) {
+		value++;
+		DPRINTF1("-DEBUG- fbc_filter_ip_add_check_filter_func: descript &%s\n", value);
+		if (strcmp(value, "good") && strcmp(value, "bad")) {
+			fprintf(stderr, "fbc_filter_add_check_filter_func: uncognize description %s for ip checksum filter\n", value);
+			return 0;
+		}
+		fbc_filter_add_func(filter, fbc_filter_ip_check_descript, value, string_arg_size(value));
+		DPRINTF("-DEBUG- fbc_filter_ip_add_check_filter_func: add fbc_filter_filter_ip_check_descript into filter\n");
+	} else {
+		check = htons((u_int16_t)(string_to_uint(value) & 0xffff));
+		fbc_filter_add_func(filter, fbc_filter_ip_check, &check, sizeof(check));
+		DPRINTF("-DEBUG- fbc_filter_ip_add_check_filter_func: add fbc_filter_filter_ip_check into filter\n");
+	}
 	return 1;
 }
 
