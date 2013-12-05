@@ -386,7 +386,7 @@ fbc_add_func_into_filter_t fbc_ip_attribute_map(char *attr)
 			return (fbc_ip_attribute[i].add_func_into_filter);
 		}
 		if (fbc_attribute_equal(fbc_ip_attribute[i].attribute, FBC_ATTRIBUTE_NULL)) {
-			fprintf(stderr, "No attribute %s in protocol %s\n", attr, FBC_PROTOCOL_ETHER);
+			fprintf(stderr, "No attribute %s in protocol %s\n", attr, FBC_PROTOCOL_IP);
 			return 0;
 		}
 		i++;
