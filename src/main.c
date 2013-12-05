@@ -105,7 +105,7 @@ int main()
 	fbc_Packet  *packet = 0;
 	fbc_Filter *filter = 0;
 
-	char filename[128] = "packetfilter/ether.pf";
+	char filename[128] = "packetfilter/ip.pf";
 
 	filter = fbc_read_pf_init_filter(filename);
 

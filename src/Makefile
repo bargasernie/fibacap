@@ -1,7 +1,7 @@
 all: fibacap
 
-FILTER_OBJ=fbc_filter_ether.o
-OBJ=main.o fbc_address.o fbc_packet.o fbc_ether.o fbc_ip.o fbc_arp.o fbc_tcp.o fbc_udp.o fbc_filter.o fbc_pf.o fbc_lib.o $(FILTER_OBJ)
+FILTER_OBJ=fbc_filter_ether.o fbc_filter_ip.o
+OBJ=main.o fbc_address.o fbc_packet.o fbc_checksum.o fbc_ether.o fbc_ip.o fbc_arp.o fbc_tcp.o fbc_udp.o fbc_filter.o fbc_pf.o fbc_lib.o $(FILTER_OBJ)
 
 fibacap: $(OBJ)
 	gcc -Wall -o fibacap $(OBJ)
@@ -24,6 +24,9 @@ fbc_filter.o: fbc_filter.h fbc_filter.c fbc_packet.h
 fbc_pf.o: fbc_pf.h fbc_pf.c fbc_filter.h 
 	gcc -Wall -c fbc_pf.c
 
+fbc_checksum.o: fbc_checksum.c fbc_checksum.h
+	gcc -Wall -c fbc_checksum.c
+
 fbc_ether.o: fbc_ether.c fbc_ether.h fbc_common.h fbc_packet.h fbc_address.h
 	gcc -Wall -c fbc_ether.c
 
@@ -41,6 +44,9 @@ fbc_udp.o: fbc_udp.h fbc_tcp.c fbc_common.h fbc_packet.h fbc_address.h
 
 fbc_filter_ether.o: fbc_filter_ether.h fbc_filter_ether.c fbc_packet.h fbc_lib.h
 	gcc -Wall -c fbc_filter_ether.c
+
+fbc_filter_ip.o: fbc_filter_ip.h fbc_filter_ip.c fbc_packet.h fbc_lib.h
+	gcc -Wall -c fbc_filter_ip.c
 
 run: 
 	./fibacap

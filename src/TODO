@@ -24,11 +24,12 @@
 6	F	TCP packet
 7	F	UDP packet
 8	F	add fbc_Filter
-9		add fbc_filter_ether
-10		define packet filter
-11		define ether packet filter attribute
-12		add fbc_pf to read packet filter file and analyze the filters
-13		in fbc_pf: analyze protocol
-14		in fbc_pf: analyze attribute
-15		select phraser to construct attribute filters
-16		modify fbc_filter: allocate memory for argments and deallocate when destroy filter
+9	F	add fbc_filter_ether
+10	F	define packet filter
+11	F	define ether packet filter attribute
+12	F	add fbc_pf to read packet filter file and analyze the filters
+13	F	in fbc_pf: analyze protocol
+14	F	in fbc_pf: analyze attribute
+15	F	select phraser to construct attribute filters
+16	F	modify fbc_filter: allocate memory for argments and deallocate when destroy filter
+17		ip filter
