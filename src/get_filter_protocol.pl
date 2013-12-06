@@ -86,8 +86,9 @@ sub get_filter_function {
 	my $ARG_VAR = $arg->{ARG_VAR};
 	my $ARG_TYPE = $arg->{ARG_TYPE};
 	my $ARG_SIZE = $arg->{ARG_SIZE};
+	my $TYPE = $arg->{TYPE};
 
-	if ($arg->{TYPE} eq "array") {
+	if ($TYPE eq "array") {
 		$text = qq|
 /* filter function */
 /* fbc_filter_func_t */
@@ -100,7 +101,12 @@ int fbc_filter_$PROTOCOL\_$ATTRIBUTE(fbc_Packet *packet, fbc_filter_arg_t arg, i
 |;
 	} 
 
-	if ($arg->{TYPE} eq "u_int16_t") {
+	if (($TYPE eq "u_int16_t")
+	or  ($TYPE eq "u_int32_t")
+	or  ($TYPE eq "u_int8_t" )
+	or  ($TYPE eq "Byte"     )
+	or  ($TYPE eq "bits"     )
+	) {
 		$text = qq|
 /* filter function */
 /* fbc_filter_func_t */
@@ -131,8 +137,9 @@ sub get_fbc_filter_add_function {
 	my $ARG_TYPE = $arg->{ARG_TYPE};
 	my $ARG_VAR = $arg->{ARG_VAR};
 	my $ARG_SIZE = $arg->{ARG_SIZE};
+	my $TYPE = $arg->{TYPE};
 
-	if ($arg->{TYPE} eq "array") {
+	if ($TYPE eq "array") {
 		$text = qq|
 /* function that adds filter function into filter */
 /* fbc_add_func_into_filter_t */
@@ -153,10 +160,11 @@ int fbc_filter_$PROTOCOL\_add_$ATTRIBUTE\_filter_func(fbc_Filter *filter, char *
 |;
 	}
 
-	if (($ARG_TYPE eq "u_int16_t") 
-	or  ($ARG_TYPE eq "u_int32_t") 
-	or  ($ARG_TYPE eq "u_int8_t" )
-	or  ($ARG_TYPE eq "Byte"     )) {
+	if (($TYPE eq "u_int16_t") 
+	or  ($TYPE eq "u_int32_t") 
+	or  ($TYPE eq "u_int8_t" )
+	or  ($TYPE eq "bits"     )
+	or  ($TYPE eq "Byte"     )) {
 		$text = qq|
 /* function that adds filter function into filter */
 /* fbc_add_func_into_filter_t */
